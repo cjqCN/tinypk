@@ -1,2 +1,2 @@
 # tinypk
-分布式primary-key生成器
+轻量级分布式 primary-key 生成器
