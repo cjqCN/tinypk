@@ -6,49 +6,43 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisOperations;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
-public class RedisBasedInstanceIdLock implements InstanceIdLock<Long> {
+/**
+ * 基于redis的实例锁
+ *
+ * @author chenjinquan
+ */
+public abstract class RedisBasedInstanceIdLock<K extends Comparable> implements InstanceIdLock {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(InstanceIdLock.class);
+    protected final static Logger LOGGER = LoggerFactory.getLogger(InstanceIdLock.class);
+    protected static final String DEFAULT_SCOPE = "instance_id_lock";
 
-    private static final long DEFAULT_OFFSET = 0;
-    private static final long DEFAULT_LIMIT = 0;
-    private static final String DEFAULT_SCOPE = "instance_id_lock";
+    protected final String scope;
+    protected final RedisOperations<String, String> redisOperations;
 
-    private final long offset;
-    private final long limit;
-    private final String scope;
-    private final RedisOperations<String, String> redisOperations;
+    protected final String lockId = UUID.randomUUID().toString();
+    protected K instanceId;
 
-    private final String lockId = UUID.randomUUID().toString();
-    private Long instanceId;
-
-    public RedisBasedInstanceIdLock(long offset, long limit, String scope, RedisOperations<String, String> redisOperations) {
-        this.offset = offset;
-        this.limit = limit;
+    public RedisBasedInstanceIdLock(String scope, RedisOperations<String, String> redisOperations) {
         this.scope = scope;
         this.redisOperations = redisOperations;
     }
 
-    public RedisBasedInstanceIdLock(String scope, RedisOperations<String, String> redisOperations) {
-        this(DEFAULT_OFFSET, DEFAULT_LIMIT, scope, redisOperations);
-    }
-
     public RedisBasedInstanceIdLock(RedisOperations<String, String> redisOperations) {
-        this(DEFAULT_OFFSET, DEFAULT_LIMIT, DEFAULT_SCOPE, redisOperations);
+        this(DEFAULT_SCOPE, redisOperations);
     }
 
     @Override
-    public LockInfo<Long> lock(long lease) {
+    public LockInfo<K> lock(long lease) {
         final int loopNum = 1024;
         long endTimestamp = TimeUtil.currentTimeSec() + lease;
-        LockInfo<Long> lockInfo = new LockInfo();
+        LockInfo<K> lockInfo = new LockInfo();
         lockInfo.setTimestamp(endTimestamp);
         for (int i = 0; i < loopNum; i++) {
-            long instanceId = ThreadLocalRandom.current().nextLong(limit - offset) + offset;
+            K instanceId = randomInstanceId();
             if (!tryLock(instanceId, endTimestamp)) {
                 lockInfo.setKey(instanceId);
+                this.instanceId = instanceId;
                 return lockInfo;
             }
         }
@@ -76,7 +70,7 @@ public class RedisBasedInstanceIdLock implements InstanceIdLock<Long> {
     }
 
 
-    private boolean tryLock(long instanceId, long endTimestamp) {
+    private boolean tryLock(K instanceId, long endTimestamp) {
         String key = key(instanceId);
         String content = lockId + "." + endTimestamp;
         boolean lock = redisOperations.opsForValue().setIfAbsent(key, content);
@@ -93,8 +87,10 @@ public class RedisBasedInstanceIdLock implements InstanceIdLock<Long> {
     }
 
 
-    private String key(long instanceId) {
+    protected String key(K instanceId) {
         return scope + instanceId;
     }
+
+    protected abstract K randomInstanceId();
 
 }

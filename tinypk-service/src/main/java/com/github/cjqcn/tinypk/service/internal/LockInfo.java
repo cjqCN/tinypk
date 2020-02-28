@@ -1,8 +1,9 @@
 package com.github.cjqcn.tinypk.service.internal;
 
-public class LockInfo<K> {
-    K key;
-    long timestamp;
+public class LockInfo<K extends Comparable> {
+
+    private K key;
+    private long timestamp;
 
     public K getKey() {
         return key;
