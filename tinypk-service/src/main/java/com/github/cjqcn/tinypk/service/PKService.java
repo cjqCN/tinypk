@@ -4,6 +4,6 @@ public interface PKService {
 
     long getAsLong();
 
-    String getAsShortString();
+    String getAsSimpleString();
 
 }
