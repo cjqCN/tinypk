@@ -8,13 +8,14 @@ import com.github.cjqcn.htty.core.http.HttyMethod;
 import com.github.cjqcn.htty.core.http.HttyRequest;
 import com.github.cjqcn.htty.core.http.HttyResponse;
 import com.github.cjqcn.tinypk.service.PKServiceImpl;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 @Controller
-@EnableHttyWorking(prefixPath = "/id")
+@EnableHttyWorking(path = "/id")
 public class PKController implements CommandLineRunner {
 
     @HttyRequestMapping(HttpMethod = HttyMethod.GET, path = "/long")
@@ -31,7 +32,7 @@ public class PKController implements CommandLineRunner {
     public void run(String... args) throws Exception {
         HttyServerBuilder.builder("PKService")
                 .setPort(8080)
-                .addHttyHandler(DefaultWorkBuildHelper.instance
+                .addHandler(DefaultWorkBuildHelper.instance
                         .scanAndBuild("com.github.cjqcn.tinypk.controller"))
                 .build().start();
     }
