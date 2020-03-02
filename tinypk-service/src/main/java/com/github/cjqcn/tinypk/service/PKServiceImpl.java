@@ -39,6 +39,16 @@ public class PKServiceImpl implements PKService, InitializingBean {
     }
 
     @Override
+    public long getAsLong(String scope) {
+        return 0;
+    }
+
+    @Override
+    public String getAsSimpleString(String scope) {
+        return null;
+    }
+
+    @Override
     public void afterPropertiesSet() {
         initIdWorker();
         freshExecutor.schedule(() -> {

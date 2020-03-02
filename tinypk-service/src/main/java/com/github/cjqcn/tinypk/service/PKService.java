@@ -6,4 +6,7 @@ public interface PKService {
 
     String getAsSimpleString();
 
+    long getAsLong(String scope);
+
+    String getAsSimpleString(String scope);
 }
