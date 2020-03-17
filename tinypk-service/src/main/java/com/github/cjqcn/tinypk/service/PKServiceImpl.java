@@ -3,6 +3,7 @@ package com.github.cjqcn.tinypk.service;
 import com.github.cjqcn.tinypk.service.internal.InstanceIdLock;
 import com.github.cjqcn.tinypk.service.internal.LockInfo;
 import com.github.cjqcn.tinypk.service.internal.SingleInstanceIdLock;
+import com.github.cjqcn.tinypk.service.util.NumberUtil;
 import com.github.cjqcn.tinypk.service.util.SnowflakeIdWorker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +34,19 @@ public class PKServiceImpl implements PKService, InitializingBean {
     }
 
     @Override
-    public String getAsSimpleString() {
+    public String getAsShortString() {
         long id = getAsLong();
-        return Long.toHexString(id);
+        return NumberUtil.to62RadixString(id);
     }
 
     @Override
     public long getAsLong(String scope) {
-        return 0;
+        return getAsLong();
     }
 
     @Override
-    public String getAsSimpleString(String scope) {
-        return null;
+    public String getAsShortString(String scope) {
+        return getAsShortString();
     }
 
     @Override

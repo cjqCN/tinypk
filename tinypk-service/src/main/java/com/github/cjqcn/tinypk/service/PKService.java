@@ -4,9 +4,9 @@ public interface PKService {
 
     long getAsLong();
 
-    String getAsSimpleString();
+    String getAsShortString();
 
     long getAsLong(String scope);
 
-    String getAsSimpleString(String scope);
+    String getAsShortString(String scope);
 }

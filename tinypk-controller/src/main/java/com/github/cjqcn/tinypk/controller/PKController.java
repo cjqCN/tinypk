@@ -8,7 +8,6 @@ import com.github.cjqcn.htty.core.http.HttyMethod;
 import com.github.cjqcn.htty.core.http.HttyRequest;
 import com.github.cjqcn.htty.core.http.HttyResponse;
 import com.github.cjqcn.tinypk.service.PKServiceImpl;
-import io.netty.handler.codec.http.DefaultHttpHeaders;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
 
@@ -25,7 +24,7 @@ public class PKController implements CommandLineRunner {
 
     @HttyRequestMapping(HttpMethod = HttyMethod.GET, path = "/string")
     public void stringId(HttyRequest httyRequest, HttyResponse httyResponse) {
-        httyResponse.sendString(OK, PKServiceImpl.instance.getAsSimpleString());
+        httyResponse.sendString(OK, PKServiceImpl.instance.getAsShortString());
     }
 
     @Override
